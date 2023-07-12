@@ -46,10 +46,6 @@ jobs:
         run: terraform init
       - name: terraformer download
         run: |
-        cd .terraform
-        mkdir plugins
-        mkdir plugins/windows_amd64
-        cd plugins/windows_amd64
         wget https://releases.hashicorp.com/terraform-provider-aws/4.51.0/terraform-provider-aws_4.51.0_linux_amd64.zip
       - name: Run Terraformer
         run: |
