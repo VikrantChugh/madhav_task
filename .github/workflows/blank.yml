@@ -19,7 +19,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: linux
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -46,7 +46,10 @@ jobs:
         run: terraform init
       - name: terraformer download
         run: |
-        wget https://releases.hashicorp.com/terraform-provider-aws/4.51.0/terraform-provider-aws_4.51.0_linux_amd64.zip
+        wget https://github.com/GoogleCloudPlatform/terraformer/releases/download/$(curl -s https://api.github.com/repos/GoogleCloudPlatform/terraformer/releases/latest | grep tag_name | cut -d '"' -f 4)/terraformer-all-linux-amd64
+          chmod +x terraformer-all-linux-amd64
+          sudo mv terraformer-all-linux-amd64 /usr/local/bin/terraformer
+          wget https://releases.hashicorp.com/terraform/1.4.5/terraform_1.4.5_linux_amd64.zip && unzip terraform_1.4.5_linux_amd64.zip
       - name: Run Terraformer
         run: |
           terraformer import aws --resources=ec2_instance --filter="Name=id;Value=i-062882f1cd12b56dc" --regions=us-east-1
