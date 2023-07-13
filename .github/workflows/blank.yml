@@ -1,48 +1,123 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the workflow will run
+name: 'Terraformer'
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches:
+      - main
   workflow_dispatch:
-env:
-  aws-region: us-east-1
+    inputs:
+    # resource:
+    #   description: 'Enter the resource'
+      resource:
+        type: choice
+        required: true
+        description: Make a choice of resource
+        options:
+        - accessanalyzer
+        - acm
+        - alb 
+        - api_gateway
+        - appsync
+        - auto_scaling
+        - batch
+        - budgets
+        - cloud9
+        - cloudformation
+        - cloudfront
+        - cloudhsm
+        - cloudtrail
+        - cloudwatch
+        - codebuild
+        - codecommit
+        - codedeploy
+        - codepipeline
+        - cognito
+        - config
+        - customer_gateway
+        - datapipeline
+        - devicefarm
+        - docdb
+        - dynamodb
+        - ebs
+        - ec2_instance
+        - ecr
+        - ecrpublic
+        - ecs
+        - efs
+        - eip
+        - eks
+        - elasticache
+        - elastic_beanstalk
+        - elb
+        - emr
+        - eni
+        - es
+        - firehose
+        - glue
+        - iam
+        - igw
+        - iot
+        - kinesis
+        - kms
+        - lambda
+        - logs
+        - media_package
+        - media_store
+        - medialive
+        - msk
+        - nacl
+        - nat
+        - opsworks
+        - organization
+        - qldb
+        - rds
+        - resourcegroups
+        - route53
+        - route_table
+        - s3
+        - secretsmanager
+        - securityhub
+        - servicecatalog
+        - ses
+        - sfn
+        - sg
+        - sns
+        - sqs
+        - ssm
+        - subnet
+        - swf
+        - transit_gateway
+        - vpc
+        - vpc_peering
+        - vpn_connection
+        - vpn_gateway
+        - vpn_gateway
+        - vpn_gateway
+        - wafv2_cloudfront
+        - wafv2_regional
+        - workspaces
+        - xray
+      region:
+        description: 'Enter the region'
+        required: true
+      value_of_resource:
+        description: 'Enter the value of resource'
+        required: true
+
+ 
 
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  terraform:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: vikrant
-        uses: actions/checkout@v2
-        with: 
-          repository: VikrantChugh/tasks
-          ref: 'master'
-          token: ${{ secrets.TOKEN_GITHUB }}
-      - name: AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1   
+      - name: Configure AWS Credentials Action For GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
-          Aws-region: ${{env.aws-region}}
-          
-      - name: download terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.1.7
-      
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ap-south-1 
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
       - name: Setup Terraformer
@@ -51,34 +126,9 @@ jobs:
           chmod +x terraformer-all-linux-amd64
           sudo mv terraformer-all-linux-amd64 /usr/local/bin/terraformer
           wget https://releases.hashicorp.com/terraform/1.4.5/terraform_1.4.5_linux_amd64.zip && unzip terraform_1.4.5_linux_amd64.zip
-          terraformer --version
-          ls
-      - name: terraform init
+      - name: Terraform Init
+        id: init
         run: terraform init
-      - name: Run Terraformer
+      - name: Terraformer Import
         run: |
-          terraformer import aws --resources=ec2_instance --filter="Name=id;Value=i-062882f1cd12b56dc" --regions=us-east-1 
-      # - name: plan
-      #   run: terraform plans
-      # - name: terraform apply 
-      #   run: terraform apply -auto-approve
-      # - name: git
-      #   run: git init
-      
-      - name: Commit file
-        run: |
-          git config --local user.email "Vikrantchughimp@gmail.com"
-          git config --local user.name "VikrantChugh"
-          git add .
-          git commit -a -m "Add changes"
-          git push
-          
-  
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.TOKEN_GITHUB }}
-      #     branch: "master"
-      # - name: push
-      #   run: git push
-      
+          terraformer import aws --path-pattern="{output}/" --compact=true --regions=${{ github.event.inputs.region }} --resources=${{ github.event.inputs.resource }} --filter="Name=id;Value=${{ github.event.inputs.value_of_resource }}" --profile ""
