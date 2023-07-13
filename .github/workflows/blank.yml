@@ -59,7 +59,7 @@ jobs:
         run: |
           terraformer import aws --resources=ec2_instance --filter="Name=id;Value=i-062882f1cd12b56dc" --regions=us-east-1 
       # - name: plan
-      #   run: terraform plan
+      #   run: terraform plans
       # - name: terraform apply 
       #   run: terraform apply -auto-approve
       # - name: git
