@@ -56,7 +56,7 @@ jobs:
         run: terraform init
       - name: Run Terraformer
         run: |
-          terraformer import aws --resources=ec2_instance --filter="Name=id;Value=i-06049885c9234a53c" --regions=us-east-1 
+          terraformer import aws --resources=ec2_instance --filter="Name=id;Value=i-06049885c9234a53c" --regions=us-east-1 --profile "" --path-pattern="{output}/" --compact=true
       # - name: plan
       #   run: terraform plan
       # - name: terraform apply 
