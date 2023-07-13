@@ -68,7 +68,7 @@ jobs:
         run: |
           git config --local user.email "Vikrantchughimp@gmail.com"
           git config --local user.name "VikrantChugh"
-          git add .
+          git add generated
           git commit -a -m "Add changes"
           git push
           
