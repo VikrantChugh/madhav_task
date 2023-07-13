@@ -68,7 +68,7 @@ jobs:
         run: |
           git config --local user.email "Vikrantchughimp@gmail.com"
           git config --local user.name "VikrantChugh"
-          git add terraform.tfstate
+          git add .
           git commit -a -m "Add changes"
           git push
           
